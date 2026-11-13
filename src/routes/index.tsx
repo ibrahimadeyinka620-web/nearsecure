@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ResolveAI — Get Held PayPal Funds Released Faster" },
-      { name: "description", content: "ResolveAI checks your documents before you submit, so PayPal can release held money in seconds instead of days." },
-      { property: "og:title", content: "ResolveAI — Get Held PayPal Funds Released Faster" },
+      { title: "Veritrail — Unlock Held Seller Funds Faster" },
+      { name: "description", content: "Veritrail checks your documents before you submit, so your payment platform can release held money in seconds instead of days." },
+      { property: "og:title", content: "Veritrail — Unlock Held Seller Funds Faster" },
       { property: "og:description", content: "Check your proof before you send it. Find missing items instantly. Release held funds faster." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 const steps = [
-  { icon: Clock, title: "1. Your money is held", text: "PayPal holds $12,500 after a sudden jump in sales. ResolveAI explains why in plain words." },
+  { icon: Clock, title: "1. Your money is held", text: "A payment platform holds $12,500 after a sudden jump in sales. Veritrail explains why in plain words." },
   { icon: Search, title: "2. Upload your proof", text: "Add your purchase order, invoice and delivery record. Private details are hidden before anything leaves your device." },
   { icon: FileCheck2, title: "3. Instant check", text: "We compare all three documents and tell you exactly what is missing or does not match — before you submit." },
   { icon: Receipt, title: "4. Funds released", text: "A reviewer approves in one click. You get a signed receipt showing every step." },
@@ -44,22 +44,22 @@ function Landing() {
         <nav className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-5">
           <div className="flex items-center gap-3">
             <Logo className="h-10 w-10" />
-            <span className="font-display text-lg font-bold">PayPal <span className="text-gold">ResolveAI</span></span>
+            <span className="font-display text-lg font-bold">Veri<span className="text-gold">trail</span></span>
           </div>
           <Button asChild variant="secondary"><Link to="/demo" search={{}}>Try live demo</Link></Button>
         </nav>
         <div className="relative mx-auto grid max-w-6xl gap-10 px-6 pb-20 pt-10 md:grid-cols-[1.2fr_1fr] md:items-center">
           <div className="animate-rise">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3 py-1 text-xs font-semibold"><Zap className="h-3.5 w-3.5 text-gold" />Built for the PayPal AI Hackathon</p>
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3 py-1 text-xs font-semibold"><Zap className="h-3.5 w-3.5 text-gold" />Built for the NEAR Hackathon</p>
             <h1 className="font-display text-4xl font-bold leading-tight md:text-5xl">Your money is on hold. <span className="text-gold">Get it back faster.</span></h1>
-            <p className="mt-5 max-w-xl text-lg opacity-85">ResolveAI checks your proof before you send it. It tells you what's missing right away, so PayPal can release your funds in seconds — not days.</p>
+            <p className="mt-5 max-w-xl text-lg opacity-85">Veritrail checks your proof before you send it. It tells you what's missing right away, so your payment platform can release your funds in seconds — not days.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" variant="secondary"><Link to="/demo" search={{ scenario: "clean" }}>Start the demo <ArrowRight /></Link></Button>
               <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><a href="#how">How it works</a></Button>
             </div>
           </div>
           <div className="animate-rise rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 p-6 backdrop-blur">
-            <div className="flex items-center justify-between text-sm"><span className="font-semibold">Case #PP-4821</span><span className="rounded-full bg-gold px-2 py-0.5 text-xs font-bold text-primary">On hold</span></div>
+            <div className="flex items-center justify-between text-sm"><span className="font-semibold">Case #VT-4821</span><span className="rounded-full bg-gold px-2 py-0.5 text-xs font-bold text-primary">On hold</span></div>
             <div className="mt-3 font-display text-4xl font-bold">$12,500.00</div>
             <p className="mt-1 text-sm opacity-75">Held because sales jumped 7× above normal.</p>
             <ul className="mt-5 space-y-2 text-sm">
@@ -89,7 +89,7 @@ function Landing() {
             </div>
             <div className="rounded-2xl border-2 border-secondary bg-card p-6">
               <PackageCheck className="h-8 w-8 text-success" />
-              <h3 className="mt-3 text-xl font-bold">With ResolveAI</h3>
+              <h3 className="mt-3 text-xl font-bold">With Veritrail</h3>
               <ul className="mt-3 space-y-2 text-muted-foreground">
                 <li>• A live checklist shows what's missing before you send.</li>
                 <li>• All three documents are compared for you.</li>
@@ -144,7 +144,7 @@ function Landing() {
 
         <section className="bg-hero text-primary-foreground">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-6 px-6 py-12">
-            <div className="flex items-center gap-3"><Lock className="h-6 w-6 text-gold" /><p className="max-w-lg text-sm opacity-90">Private details are hidden on your device. Every file gets a unique fingerprint so no one can change it later. This is a hackathon demo — no real PayPal money is moved.</p></div>
+            <div className="flex items-center gap-3"><Lock className="h-6 w-6 text-gold" /><p className="max-w-lg text-sm opacity-90">Private details are hidden on your device. Every file gets a unique fingerprint so no one can change it later. This is a hackathon demo — no real money is moved.</p></div>
             <Button asChild size="lg" variant="secondary"><Link to="/demo" search={{}}>Open live demo <ArrowRight /></Link></Button>
           </div>
         </section>

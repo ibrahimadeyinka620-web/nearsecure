@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sellerProtection } from "@/lib/paypal";
+import { sellerProtection } from "@/lib/payments";
 import type { EvidenceDoc, DocKind } from "@/lib/resolve";
 
 const doc = (kind: DocKind, original: string): EvidenceDoc => ({ id: kind, name: kind, kind, size: 1, hash: "x", uploadedAt: "", original, redacted: original, piiCount: 0 });

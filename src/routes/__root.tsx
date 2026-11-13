@@ -81,9 +81,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PayPal ResolveAI" },
+      { title: "Veritrail" },
       { name: "description", content: "AI-powered dispute and account hold resolution." },
-      { property: "og:title", content: "PayPal ResolveAI" },
+      { property: "og:title", content: "Veritrail" },
       { property: "og:description", content: "AI-powered dispute and account hold resolution." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

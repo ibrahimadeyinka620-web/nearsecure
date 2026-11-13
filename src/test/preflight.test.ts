@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compareEvidence, evaluatePreflight } from "@/lib/preflight";
-import { SCENARIOS } from "@/lib/paypal";
+import { SCENARIOS } from "@/lib/payments";
 import { guessKind, type EvidenceDoc, type DocKind } from "@/lib/resolve";
 
 const doc = (kind: DocKind, original: string): EvidenceDoc => ({ id: kind, name: kind, kind, size: 1, hash: "x", uploadedAt: "", original, redacted: original, piiCount: 0 });
