@@ -1,6 +1,6 @@
 import type { EvidenceDoc } from "./resolve";
 
-export const CASE_ID = "PP-D-4821";
+export const CASE_ID = "VT-4821";
 export const ORDER_ID = "5O190127TN364715T";
 export const CAPTURE_ID = "3C679366HH908993F";
 export const AMOUNT = 12500;
@@ -48,7 +48,7 @@ export const SCENARIOS: Scenario[] = [
 
 export type Rule = { id: string; label: string; pass: boolean; detail: string };
 
-/** PayPal Seller Protection (Item Not Received) eligibility, simplified. */
+/** Delivery protection (Item Not Received) eligibility, simplified. */
 export function sellerProtection(docs: EvidenceDoc[], amount = AMOUNT) {
   const all = docs.map((d) => d.original).join("\n");
   const man = docs.filter((d) => d.kind === "manifest").map((d) => d.original).join("\n");
@@ -65,7 +65,7 @@ export function sellerProtection(docs: EvidenceDoc[], amount = AMOUNT) {
     { id: "tangible", label: "Physical, tangible item", pass: tangible, detail: tangible ? "Supplier invoice lists physical goods" : "No invoice proving a physical item" },
     { id: "tracking", label: "Online tracking number", pass: !!tracking, detail: tracking ? `Carrier tracking ${tracking}` : "No carrier tracking found" },
     { id: "delivered", label: "Delivered status", pass: delivered, detail: delivered ? "Carrier shows delivered" : "No proof of delivery" },
-     { id: "address", label: "Shipped to buyer's address", pass: addressOk, detail: addressOk ? "Delivery address matches the supplied PO; PayPal transaction address not independently verified" : !shipTo || !deliverTo ? "Supply both the PO shipping address and carrier delivery address" : `Order ships to ${shipTo}, carrier delivered to ${deliverTo}` },
+     { id: "address", label: "Shipped to buyer's address", pass: addressOk, detail: addressOk ? "Delivery address matches the supplied PO; payment platform address not independently verified" : !shipTo || !deliverTo ? "Supply both the PO shipping address and carrier delivery address" : `Order ships to ${shipTo}, carrier delivered to ${deliverTo}` },
      { id: "signature", label: `Signature confirmation (orders ≥ $750)`, pass: !needsSig || signed, detail: signed ? "Recipient signature recorded in supplied evidence; not independently verified" : needsSig ? `$${amount.toLocaleString()} order: missing signature confirmation. Upload carrier evidence of a recipient signature before submitting.` : "Not required" },
   ];
   const eligible = rules.every((r) => r.pass);
@@ -87,10 +87,10 @@ const amt = (v = AMOUNT) => ({ currency_code: "USD", value: v.toFixed(2) });
 
 export function evOrderCompleted(at: string): ApiEvent {
   return {
-    id: rid(), at, type: "webhook", name: "CHECKOUT.ORDER.COMPLETED",
+    id: rid(), at, type: "webhook", name: "order.completed",
     payload: {
       id: "WH-" + rid().slice(0, 17).toUpperCase(), event_version: "1.0", create_time: at, resource_type: "checkout-order", resource_version: "2.0",
-      event_type: "CHECKOUT.ORDER.COMPLETED", summary: "Checkout Order Completed",
+      event_type: "order.completed", summary: "Checkout Order Completed",
       resource: { id: ORDER_ID, intent: "CAPTURE", status: "COMPLETED", purchase_units: [{ reference_id: "PO-7781", amount: amt(), payee: { merchant_id: "7KNGBPH2U58GQ" }, payments: { captures: [{ id: CAPTURE_ID, status: "COMPLETED", amount: amt(), final_capture: true, seller_protection: { status: "PENDING_REVIEW", dispute_categories: ["ITEM_NOT_RECEIVED", "UNAUTHORIZED_TRANSACTION"] } }] } }] },
     },
   };
@@ -98,9 +98,9 @@ export function evOrderCompleted(at: string): ApiEvent {
 
 export function evRiskHold(at: string): ApiEvent {
   return {
-    id: rid(), at, type: "webhook", name: "RISK.DISPUTE.CREATED",
+    id: rid(), at, type: "webhook", name: "hold.created",
     payload: {
-      id: "WH-" + rid().slice(0, 17).toUpperCase(), event_version: "1.0", create_time: at, resource_type: "dispute", event_type: "RISK.DISPUTE.CREATED",
+      id: "WH-" + rid().slice(0, 17).toUpperCase(), event_version: "1.0", create_time: at, resource_type: "dispute", event_type: "hold.created",
       summary: "A risk dispute / reserve hold was created",
       resource: { dispute_id: CASE_ID, create_time: at, reason: "UNAUTHORIZED", status: "WAITING_FOR_SELLER_RESPONSE", dispute_life_cycle_stage: "INQUIRY", dispute_channel: "INTERNAL",
         disputed_transactions: [{ seller_transaction_id: CAPTURE_ID, gross_amount: amt() }], dispute_amount: amt(),
@@ -112,10 +112,10 @@ export function evRiskHold(at: string): ApiEvent {
 
 export function evProvideEvidence(at: string, docs: EvidenceDoc[], tracking?: string): ApiEvent {
   return {
-    id: rid(), at, type: "request", name: `/v1/customer/disputes/${CASE_ID}/provide-evidence`, method: "POST", status: 200,
+    id: rid(), at, type: "request", name: `/v1/cases/${CASE_ID}/provide-evidence`, method: "POST", status: 200,
     payload: {
       request: {
-        headers: { "Content-Type": "multipart/related", Authorization: "Bearer A21AA…", "PayPal-Request-Id": rid() },
+        headers: { "Content-Type": "multipart/related", Authorization: "Bearer A21AA…", "Idempotency-Key": rid() },
         input: {
           evidences: [
             ...(tracking ? [{ evidence_type: "PROOF_OF_FULFILLMENT", evidence_info: { tracking_info: [{ carrier_name: "UPS", tracking_number: tracking }] }, notes: "Signed POD attached" }] : []),
@@ -123,25 +123,25 @@ export function evProvideEvidence(at: string, docs: EvidenceDoc[], tracking?: st
           ],
         },
       },
-      response: { links: [{ href: `https://api-m.paypal.com/v1/customer/disputes/${CASE_ID}`, rel: "self", method: "GET" }] },
+      response: { links: [{ href: `https://api.veritrail.app/v1/cases/${CASE_ID}`, rel: "self", method: "GET" }] },
     },
   };
 }
 
 export function evDisputeUpdated(at: string): ApiEvent {
-  return { id: rid(), at, type: "webhook", name: "CUSTOMER.DISPUTE.UPDATED", payload: { event_type: "CUSTOMER.DISPUTE.UPDATED", create_time: at, resource: { dispute_id: CASE_ID, status: "UNDER_REVIEW", dispute_life_cycle_stage: "INQUIRY" } } };
+  return { id: rid(), at, type: "webhook", name: "case.updated", payload: { event_type: "case.updated", create_time: at, resource: { dispute_id: CASE_ID, status: "UNDER_REVIEW", dispute_life_cycle_stage: "INQUIRY" } } };
 }
 
 export function evRelease(at: string, txn: string): ApiEvent {
   return {
-    id: rid(), at, type: "request", name: `/v1/customer/disputes/${CASE_ID}/adjudicate`, method: "POST", status: 200,
-    payload: { request: { adjudication_type: "SELLER_FAVOR", note: "Evidence chain verified by ResolveAI" }, response: { release_id: txn, hold_status: "RELEASED", amount: amt(), balance_bucket: "AVAILABLE", released_at: at } },
+    id: rid(), at, type: "request", name: `/v1/cases/${CASE_ID}/adjudicate`, method: "POST", status: 200,
+    payload: { request: { adjudication_type: "SELLER_FAVOR", note: "Evidence chain verified by Veritrail" }, response: { release_id: txn, hold_status: "RELEASED", amount: amt(), balance_bucket: "AVAILABLE", released_at: at } },
   };
 }
 
 export function evResolved(at: string, eligible: boolean): ApiEvent {
   return {
-    id: rid(), at, type: "webhook", name: "CUSTOMER.DISPUTE.RESOLVED",
-    payload: { event_type: "CUSTOMER.DISPUTE.RESOLVED", create_time: at, resource_type: "dispute", resource: { dispute_id: CASE_ID, status: "RESOLVED", dispute_outcome: { outcome_code: "RESOLVED_SELLER_FAVOUR", amount_refunded: amt(0) }, seller_protection_eligible: eligible, disputed_transactions: [{ seller_transaction_id: CAPTURE_ID, seller_protection_eligible: eligible }] } },
+    id: rid(), at, type: "webhook", name: "case.resolved",
+    payload: { event_type: "case.resolved", create_time: at, resource_type: "dispute", resource: { dispute_id: CASE_ID, status: "RESOLVED", dispute_outcome: { outcome_code: "RESOLVED_SELLER_FAVOUR", amount_refunded: amt(0) }, seller_protection_eligible: eligible, disputed_transactions: [{ seller_transaction_id: CAPTURE_ID, seller_protection_eligible: eligible }] } },
   };
 }

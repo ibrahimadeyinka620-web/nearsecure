@@ -17,15 +17,15 @@ import {
 import {
   SCENARIOS, sellerProtection, evOrderCompleted, evRiskHold, evProvideEvidence, evDisputeUpdated, evRelease, evResolved,
   type ApiEvent, type ScenarioId,
-} from "@/lib/paypal";
+} from "@/lib/payments";
 
 export const Route = createFileRoute("/demo")({
   validateSearch: (s: Record<string, unknown>): { scenario?: ScenarioId | undefined } => ({ scenario: ["clean","mismatch","nosig"].includes(s["scenario"] as string) ? (s["scenario"] as ScenarioId) : undefined }),
   head: () => ({
     meta: [
-      { title: "ResolveAI Live Demo — Release a PayPal Hold" },
+      { title: "Veritrail Live Demo — Unlock Held Seller Funds" },
       { name: "description", content: "Merchants submit sealed evidence, AI finds gaps, analysts release holds in one click." },
-      { property: "og:title", content: "ResolveAI Live Demo — Release a PayPal Hold" },
+      { property: "og:title", content: "Veritrail Live Demo — Unlock Held Seller Funds" },
       { property: "og:description", content: "Live evidence pre-flight checks, three-way document reconciliation and simulated hold resolution." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,7 +51,7 @@ function App() {
   const [scenario, setScenario] = useState<ScenarioId>(Route.useSearch().scenario ?? "clean");
   const [docs, setDocs] = useState<EvidenceDoc[]>([]);
   const [audit, setAudit] = useState<AuditEvent[]>([
-    { at: now(), actor: "PayPal Risk Engine", action: "Hold placed on $12,500.00 — velocity anomaly (7.4× 30-day avg)" },
+    { at: now(), actor: "Payment platform risk check", action: "Hold placed on $12,500.00 — velocity anomaly (7.4× 30-day avg)" },
   ]);
   const [events, setEvents] = useState<ApiEvent[]>([]);
   const [drawer, setDrawer] = useState(false);
@@ -72,7 +72,7 @@ function App() {
     if (!submitted || !preflight.ready || decision) return;
     setDecision(d); setAutoPending(false);
     log(actor, `Approved simulated release — ${d.txn}`);
-    log("PayPal Payments API (simulated)", "Reserve released: $12,500.00 restored to available balance");
+    log("Payment platform (simulated)", "Reserve released: $12,500.00 restored to available balance");
     emit(evRelease(d.at, d.txn), evResolved(d.at, sp.eligible));
   };
   useEffect(() => {
@@ -80,14 +80,14 @@ function App() {
     const timer = setTimeout(() => {
       const at = now();
       const txn = "REL-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-      approve({ status: "approved", at, txn, api: { simulated: true, approval_mode: "automatic", hold_status: "RELEASED", release_id: txn, amount: { currency_code: "USD", value: "12500.00" }, released_at: at } }, "ResolveAI · automated demo review");
+      approve({ status: "approved", at, txn, api: { simulated: true, approval_mode: "automatic", hold_status: "RELEASED", release_id: txn, amount: { currency_code: "USD", value: "12500.00" }, released_at: at } }, "Veritrail · automated demo review");
     }, 3000);
     return () => clearTimeout(timer);
   }, [autoPending, submitted, preflight.ready, decision]);
 
   const reset = (id: ScenarioId) => {
     setAutoPending(false); setAutoApprove(false); setScenario(id); setDocs([]); setSubmitted(false); setDecision(null); setView("merchant");
-    setAudit([{ at: now(), actor: "PayPal Risk Engine", action: "Hold placed on $12,500.00 — velocity anomaly (7.4× 30-day avg)" }]);
+    setAudit([{ at: now(), actor: "Payment platform risk check", action: "Hold placed on $12,500.00 — velocity anomaly (7.4× 30-day avg)" }]);
     setEvents(initialEvents()); setUnseen(2);
   };
 
@@ -99,18 +99,18 @@ function App() {
           <div className="flex items-center gap-3">
             <Link to="/" aria-label="Back to overview"><Logo className="h-10 w-10" /></Link>
             <div>
-              <div className="font-display text-lg font-bold tracking-tight">PayPal <span className="text-gold">ResolveAI</span></div>
+              <div className="font-display text-lg font-bold tracking-tight">Veri<span className="text-gold">trail</span></div>
               <Link to="/" className="text-xs opacity-70 hover:opacity-100">← Back to overview</Link>
             </div>
           </div>
         </div>
         <div className="relative mx-auto max-w-6xl px-6 pb-8 pt-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold">Live demo · Case #PP-4821</p>
-          <h1 className="mt-1 font-display text-2xl font-bold md:text-3xl">{view === "merchant" ? "Step 1 — Send your proof" : view === "analyst" ? "Step 2 — PayPal reviews it" : "Step 3 — Your money is back"}</h1>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold">Live demo · Case #VT-4821</p>
+          <h1 className="mt-1 font-display text-2xl font-bold md:text-3xl">{view === "merchant" ? "Step 1 — Send your proof" : view === "analyst" ? "Step 2 — A reviewer checks it" : "Step 3 — Your money is back"}</h1>
           <ol className="mt-6 grid grid-cols-3 gap-2 md:gap-4">
             {([
               ["merchant", "Send proof", "You, the seller", Store, true],
-              ["analyst", "Review", "PayPal reviewer", Scale, submitted],
+              ["analyst", "Review", "Reviewer", Scale, submitted],
               ["receipt", "Receipt", "Funds released", Receipt, !!decision],
             ] as const).map(([v, label, sub, Icon, done], i) => (
               <li key={v}>
@@ -155,7 +155,7 @@ function App() {
         {view === "receipt" && <ReceiptView docs={docs} audit={audit} decision={decision} analysis={analysis} sp={sp} />}
       </main>
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-center text-xs text-muted-foreground">
-        Hackathon demo — no real PayPal money is moved.{" "}
+        Hackathon demo — no real money is moved.{" "}
         <button onClick={() => { setDrawer(true); setUnseen(0); }} className="underline-offset-2 opacity-60 hover:underline hover:opacity-100">Technical log</button>
       </footer>
       <DevConsole open={drawer} onClose={() => setDrawer(false)} events={events} />
@@ -173,8 +173,8 @@ function DevConsole({ open, onClose, events }: { open: boolean; onClose: () => v
       <aside className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-xl flex-col bg-console text-console-foreground shadow-2xl transition-transform duration-500 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex items-center justify-between border-b border-console-foreground/10 px-5 py-4">
           <div>
-            <div className="flex items-center gap-2 font-display font-bold"><span className="h-2 w-2 animate-pulse rounded-full bg-success" />PayPal REST API & Webhooks</div>
-            <div className="font-mono text-[11px] opacity-60">api-m.sandbox.paypal.com · v1/v2 · live event stream</div>
+            <div className="flex items-center gap-2 font-display font-bold"><span className="h-2 w-2 animate-pulse rounded-full bg-success" />Payment & NEAR event log</div>
+            <div className="font-mono text-[11px] opacity-60">Veritrail case API · NEAR testnet · simulated event stream</div>
           </div>
           <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-console-foreground/10"><X className="h-5 w-5" /></button>
         </div>
@@ -223,7 +223,7 @@ function SellerProtectionCard({ sp, compact }: { sp: ReturnType<typeof sellerPro
           <BadgeCheck className="h-6 w-6" />
         </div>
         <div>
-          <div className="font-display font-bold">{sp.eligible ? "Eligible for PayPal Seller Protection" : "Not yet eligible for Seller Protection"}</div>
+          <div className="font-display font-bold">{sp.eligible ? "Meets delivery protection rules" : "Not yet meeting delivery protection rules"}</div>
           <div className="text-xs text-muted-foreground">Item Not Received · Unauthorized Transaction</div>
         </div>
       </div>
@@ -266,7 +266,7 @@ function HoldBanner({ released }: { released: boolean }) {
     return (
       <div className="flex items-center gap-3 rounded-xl border border-success/40 bg-success/10 p-5">
         <CheckCircle2 className="h-6 w-6 text-success" />
-        <div><div className="font-bold">Case #PP-4821 resolved — $12,500.00 released</div><div className="text-sm text-muted-foreground">Funds are back in your available balance.</div></div>
+        <div><div className="font-bold">Case #VT-4821 resolved — $12,500.00 released</div><div className="text-sm text-muted-foreground">Funds are back in your available balance.</div></div>
       </div>
     );
   return (
@@ -274,7 +274,7 @@ function HoldBanner({ released }: { released: boolean }) {
       <div className="flex gap-3">
         <AlertTriangle className="mt-0.5 h-6 w-6 shrink-0 text-warning" />
         <div>
-          <div className="font-bold">Active Hold · Case #PP-4821 · $12,500.00 reserved</div>
+          <div className="font-bold">Active Hold · Case #VT-4821 · $12,500.00 reserved</div>
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">
             <b className="text-foreground">Why:</b> You received $12,500 in 48 hours — about 7× your usual volume — from a single new buyer.
             Our systems pause funds like this to protect you and the buyer. Show us where the goods came from and that they were delivered.
@@ -369,7 +369,7 @@ function Merchant({ docs, setDocs, log, analysis, submitted, onSubmit, decision,
         </div>
         <div className="space-y-6 lg:col-span-2">
           <section className="border-t pt-5" aria-labelledby="preflight-title">
-            <div className="mb-4 flex items-center justify-between gap-2"><h2 id="preflight-title" className="flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5 text-secondary" />Live Seller Protection Pre-flight</h2><span className="text-xs font-mono text-muted-foreground">{uploading ? "Reading…" : "LIVE"}</span></div>
+            <div className="mb-4 flex items-center justify-between gap-2"><h2 id="preflight-title" className="flex items-center gap-2 font-bold"><ShieldCheck className="h-5 w-5 text-secondary" />Live Protection Pre-flight</h2><span className="text-xs font-mono text-muted-foreground">{uploading ? "Reading…" : "LIVE"}</span></div>
             <div aria-live="polite" className="mb-4">
               <div className="flex justify-between text-sm font-semibold"><span>{preflight.ready ? "Ready to submit" : `${preflight.blockers.length} checks need attention`}</span><span>{preflight.readiness}%</span></div>
               <progress aria-label="Evidence readiness" value={preflight.readiness} max={100} className="mt-2 h-2 w-full accent-success" />
@@ -378,8 +378,8 @@ function Merchant({ docs, setDocs, log, analysis, submitted, onSubmit, decision,
               {check.pass ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />}
               <div><div className="font-semibold">{check.label}</div>{!check.pass && <p className="mt-0.5 text-xs text-muted-foreground">{check.detail}</p>}</div>
             </li>)}</ul>
-            <a href="https://www.paypal.com/us/legalhub/paypal/seller-protection" target="_blank" rel="noreferrer" className="mt-4 block text-xs text-secondary underline">PayPal Seller Protection requirements ↗</a>
-            <p className="mt-2 text-xs text-muted-foreground">Evidence readiness estimate, not a PayPal eligibility decision. Transaction eligibility and carrier records are not independently verified.</p>
+            <a href="https://docs.near.org" target="_blank" rel="noreferrer" className="mt-4 block text-xs text-secondary underline">Learn about NEAR ↗</a>
+            <p className="mt-2 text-xs text-muted-foreground">Evidence readiness estimate, not a payment platform decision. Transaction eligibility and carrier records are not independently verified.</p>
             <label className="mt-5 flex items-start gap-2 border-t pt-4 text-sm"><input type="checkbox" checked={autoApprove} disabled={submitted} onChange={(e) => setAutoApprove(e.target.checked)} className="mt-1 accent-primary" /><span className="font-semibold">Automatic approval (demo)<span className="mt-1 block text-xs font-normal text-muted-foreground">Clean evidence only · simulated release in 3 seconds</span></span></label>
             <Button disabled={!preflight.ready || submitted || uploading} onClick={onSubmit} className="mt-4 h-auto min-h-10 w-full whitespace-normal py-3">{autoPending ? <><Loader2 className="animate-spin" />Simulated review in progress…</> : decision ? "Demo hold released ✓" : submitted ? "Submitted to Compliance ✓" : "Submit verified defense packet"}</Button>
             {!preflight.ready && <p className="mt-2 text-xs text-destructive">Submission locked until every required check passes.</p>}
@@ -405,7 +405,7 @@ function Analyst({ docs, analysis, audit, submitted, decision, onApprove, sp, pr
   const risk = analysis.riskScore;
 
   if (!submitted)
-    return <div className="rounded-xl border bg-card p-10 text-center text-muted-foreground"><Clock className="mx-auto mb-2 h-6 w-6" />Waiting for the merchant to submit a defense packet for Case #PP-4821.</div>;
+    return <div className="rounded-xl border bg-card p-10 text-center text-muted-foreground"><Clock className="mx-auto mb-2 h-6 w-6" />Waiting for the merchant to submit a defense packet for Case #VT-4821.</div>;
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -449,7 +449,7 @@ function Analyst({ docs, analysis, audit, submitted, decision, onApprove, sp, pr
               setTimeout(() => {
                 const txn = "REL-" + Math.random().toString(36).slice(2, 10).toUpperCase();
                 const at = now();
-                onApprove({ status: "approved", at, txn, api: { simulated: true, status: 200, endpoint: "POST /v1/risk/holds/PP-4821/release", hold_status: "RELEASED", release_id: txn, amount: { currency_code: "USD", value: "12500.00" }, balance_bucket: "AVAILABLE", released_at: at } });
+                onApprove({ status: "approved", at, txn, api: { simulated: true, status: 200, endpoint: "POST /v1/holds/VT-4821/release", hold_status: "RELEASED", release_id: txn, amount: { currency_code: "USD", value: "12500.00" }, balance_bucket: "AVAILABLE", released_at: at } });
               }, 1400);
             }} className="flex w-full items-center justify-center gap-2 rounded-lg bg-success py-3 font-bold text-primary-foreground disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}Approve & Release Hold (demo)
@@ -463,18 +463,18 @@ function Analyst({ docs, analysis, audit, submitted, decision, onApprove, sp, pr
 
 function ReceiptView({ docs, audit, decision, analysis, sp }: { docs: EvidenceDoc[]; audit: AuditEvent[]; decision: Decision; analysis: Analysis; sp: SP }) {
   const [sealHash, setSealHash] = useState("");
-  const payload = useMemo(() => JSON.stringify({ case: "PP-4821", decision, seller_protection: { eligible: sp.eligible, rules: sp.rules.map((r) => ({ rule: r.label, pass: r.pass })) }, evidence: docs.map((d) => ({ name: d.name, kind: d.kind, sha256: d.hash })), audit, riskScore: analysis.riskScore }, null, 2), [docs, audit, decision, analysis, sp]);
+  const payload = useMemo(() => JSON.stringify({ case: "VT-4821", decision, seller_protection: { eligible: sp.eligible, rules: sp.rules.map((r) => ({ rule: r.label, pass: r.pass })) }, evidence: docs.map((d) => ({ name: d.name, kind: d.kind, sha256: d.hash })), audit, riskScore: analysis.riskScore }, null, 2), [docs, audit, decision, analysis, sp]);
   useEffect(() => { sha256Hex(new TextEncoder().encode(payload).buffer as ArrayBuffer).then(setSealHash); }, [payload]);
   if (!decision) return <div className="rounded-xl border bg-card p-10 text-center text-muted-foreground"><Receipt className="mx-auto mb-2 h-6 w-6" />The certified receipt is issued once the demo case is approved.</div>;
   const download = () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify({ ...JSON.parse(payload), receipt_seal_sha256: sealHash }, null, 2)], { type: "application/json" }));
-    const a = document.createElement("a"); a.href = url; a.download = "resolution-receipt-PP-4821.json"; a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement("a"); a.href = url; a.download = "resolution-receipt-VT-4821.json"; a.click(); URL.revokeObjectURL(url);
   };
   return (
     <div className="mx-auto max-w-3xl rounded-2xl border bg-card shadow-sm">
       <div className="rounded-t-2xl bg-primary p-6 text-primary-foreground">
         <div className="text-xs uppercase tracking-widest opacity-70">Certified Resolution Receipt</div>
-        <div className="mt-1 flex flex-wrap items-end justify-between gap-2"><div className="text-2xl font-extrabold">Case #PP-4821</div><div className="text-3xl font-extrabold">$12,500.00 restored</div></div>
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-2"><div className="text-2xl font-extrabold">Case #VT-4821</div><div className="text-3xl font-extrabold">$12,500.00 restored</div></div>
         <div className="mt-2 font-mono text-xs opacity-80">{decision.txn} · {new Date(decision.at).toLocaleString()}</div>
       </div>
       <div className="space-y-6 p-6">
@@ -489,8 +489,8 @@ function ReceiptView({ docs, audit, decision, analysis, sp }: { docs: EvidenceDo
           <ul className="space-y-1 text-xs">{audit.map((e, i) => <li key={i} className="flex gap-2"><span className="shrink-0 font-mono text-muted-foreground">{new Date(e.at).toLocaleTimeString()}</span><b className="shrink-0">{e.actor}</b><span>{e.action}</span></li>)}</ul>
         </div>
         <SellerProtectionCard sp={sp} compact />
-        <NearAnchorCard hashes={docs.map((d) => d.hash)} caseId="PP-4821" />
-        <div className="rounded-lg bg-success/10 p-3 text-sm"><CheckCircle2 className="mr-1 inline h-4 w-4 text-success" />Funds restored to available balance via PayPal Payments API (simulated).</div>
+        <NearAnchorCard hashes={docs.map((d) => d.hash)} caseId="VT-4821" />
+        <div className="rounded-lg bg-success/10 p-3 text-sm"><CheckCircle2 className="mr-1 inline h-4 w-4 text-success" />Funds restored to available balance (simulated payment-platform release).</div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
           <div className="min-w-0"><div className="text-xs text-muted-foreground">Receipt seal (SHA-256)</div><div className="break-all font-mono text-[11px]">{sealHash}</div></div>
           <div className="flex gap-2">

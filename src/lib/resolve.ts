@@ -77,7 +77,7 @@ export function analyzeGaps(docs: EvidenceDoc[]) {
   if (shipTo && deliverTo && shipTo !== deliverTo)
     findings.push({ severity: "high", title: "Delivery address mismatch", detail: `PO ships to ${shipTo}, but the carrier delivered to ${deliverTo}.` });
   if (man.length && man.some((d) => /no signature|left at/i.test(d.original)))
-    findings.push({ severity: "medium", title: "No delivery signature", detail: "Orders of $750 or more need signature confirmation to qualify for PayPal Seller Protection." });
+    findings.push({ severity: "medium", title: "No delivery signature", detail: "Orders of $750 or more need signature confirmation to meet delivery protection rules." });
 
   if (inv.length && po.length && man.length && !findings.some((f) => f.severity === "high"))
     findings.push({ severity: "ok", title: "Evidence chain complete", detail: "Supply → sale → fulfillment is documented end-to-end." });
@@ -88,7 +88,7 @@ export function analyzeGaps(docs: EvidenceDoc[]) {
   const riskScore = Math.max(4, Math.min(96, 82 - docs.length * 9 + high * 14 + med * 5));
 
   const summary = [
-    `Merchant reports the $12,500 velocity spike on Case #PP-4821 results from a bulk wholesale order.`,
+    `Merchant reports the $12,500 velocity spike on Case #VT-4821 results from a bulk wholesale order.`,
     inv.length ? `Supplier invoice(s) (${inv.length}) establish legitimate inventory sourcing.` : `No supplier invoice has been provided.`,
     po.length ? `Wholesale PO(s) (${po.length}) substantiate the transaction volume.` : `No wholesale PO substantiates volume.`,
     man.length ? `Carrier manifest(s) (${man.length}) document fulfillment.` : `Fulfillment is not yet documented.`,

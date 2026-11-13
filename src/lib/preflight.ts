@@ -1,5 +1,5 @@
 import type { DocKind, EvidenceDoc } from "./resolve";
-import { AMOUNT, sellerProtection } from "./paypal";
+import { AMOUNT, sellerProtection } from "./payments";
 
 export type EvidenceField = "quantity" | "address" | "tracking" | "weight" | "sku";
 export type ComparisonRow = { id: EvidenceField; label: string; values: Record<DocKind, string | null>; status: "match" | "conflict" | "missing" | "partial"; detail: string };

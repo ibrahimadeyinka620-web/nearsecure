@@ -30,4 +30,4 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Keep evidence extraction, reconciliation, and submission eligibility in the browser-safe preflight module; both submission and simulated approvals use this single gate so incomplete evidence cannot bypass the checklist.
-- Hold releases are local hackathon simulations, not real PayPal API decisions; preserve this distinction in approval records and user-visible results.
+- Hold releases are local hackathon simulations, not real payment API decisions; preserve this distinction in approval records and user-visible results.

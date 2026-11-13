@@ -1,24 +1,24 @@
-# Securepaypal
+# Veritrail
 
-Create PayPal ResolveAI: an AI-powered dispute and account hold resolution platform for a PayPal AI hackathon.
+Create Veritrail: an AI-powered dispute and account hold resolution platform for a payment platform AI hackathon.
 
 Key features and user journey:
 1. Merchant Dashboard (The Maker):
-- Active Hold Alert banner (e.g., Case #PP-4821: $12,500 held due to velocity anomaly with countdown timer and plain-language reason for the flag).
+- Active Hold Alert banner (e.g., Case #VT-4821: $12,500 held due to velocity anomaly with countdown timer and plain-language reason for the flag).
 - Secure evidence upload portal for supplier invoices, wholesale POs, and carrier manifests, featuring client-side PII redaction preview and tamper-proof SHA-256 hash audit trail.
 - AI Gap Analyzer & Pre-Flight Check: analyzes uploaded documents, detects discrepancies (such as quantity mismatches or missing delivery confirmation), and generates a structured defense summary.
 
 2. Risk Analyst Reviewer Dashboard (The Checker):
-- Toggle/switcher between Merchant and PayPal Compliance Analyst views.
+- Toggle/switcher between Merchant and payment platform Compliance Analyst views.
 - Adjudication panel showing synthesized evidence brief, fraud risk score, carrier verification status, and risk timeline.
-- One-click 'Approve & Release Hold' workflow with simulated PayPal API response releasing reserved funds.
+- One-click 'Approve & Release Hold' workflow with simulated payment API response releasing reserved funds.
 
 3. Certified Resolution Receipt:
 - Interactive audit trail and exportable resolution receipt showing timestamps, verified hashes, decision logs, and fund restoration confirmation.
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://securepaypal.lovable.app
+**Live app**: https://clearcase-fund-relay.lovable.app
 
 ## Build with Lovable
 
