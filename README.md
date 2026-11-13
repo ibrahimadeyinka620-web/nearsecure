@@ -18,7 +18,7 @@ Key features and user journey:
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://securepaypal.lovable.app
+**Live app**: https://clearcase-fund-relay.lovable.app
 
 ## Build with Lovable
 

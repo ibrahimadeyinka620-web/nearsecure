@@ -52,7 +52,7 @@ function Landing() {
           <div className="animate-rise">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/25 px-3 py-1 text-xs font-semibold"><Zap className="h-3.5 w-3.5 text-gold" />Built for the NEAR Hackathon</p>
             <h1 className="font-display text-4xl font-bold leading-tight md:text-5xl">Your money is on hold. <span className="text-gold">Get it back faster.</span></h1>
-            <p className="mt-5 max-w-xl text-lg opacity-85">Veritrail checks your proof before you send it. It tells you what's missing right away, so your payment platform can release your funds in seconds — not days.</p>
+            <p className="mt-5 max-w-xl text-lg opacity-85">Veritrail checks your proof before you send it. It tells you what's missing right away, so your funds can be released in seconds — not days. Works for card and marketplace payments, and for sellers paid on NEAR. Every proof gets a tamper-proof fingerprint you can save on NEAR.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" variant="secondary"><Link to="/demo" search={{ scenario: "clean" }}>Start the demo <ArrowRight /></Link></Button>
               <Button asChild size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><a href="#how">How it works</a></Button>
