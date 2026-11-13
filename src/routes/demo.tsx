@@ -3,6 +3,7 @@ import { EvidenceComparison } from "@/components/evidence-comparison";
 import { evaluatePreflight } from "@/lib/preflight";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/logo";
+import { NearAnchorCard } from "@/components/near-anchor";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle, ShieldCheck, Upload, FileText, Hash, Sparkles, CheckCircle2, XCircle,
@@ -488,6 +489,7 @@ function ReceiptView({ docs, audit, decision, analysis, sp }: { docs: EvidenceDo
           <ul className="space-y-1 text-xs">{audit.map((e, i) => <li key={i} className="flex gap-2"><span className="shrink-0 font-mono text-muted-foreground">{new Date(e.at).toLocaleTimeString()}</span><b className="shrink-0">{e.actor}</b><span>{e.action}</span></li>)}</ul>
         </div>
         <SellerProtectionCard sp={sp} compact />
+        <NearAnchorCard hashes={docs.map((d) => d.hash)} caseId="PP-4821" />
         <div className="rounded-lg bg-success/10 p-3 text-sm"><CheckCircle2 className="mr-1 inline h-4 w-4 text-success" />Funds restored to available balance via PayPal Payments API (simulated).</div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
           <div className="min-w-0"><div className="text-xs text-muted-foreground">Receipt seal (SHA-256)</div><div className="break-all font-mono text-[11px]">{sealHash}</div></div>
