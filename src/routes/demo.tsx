@@ -4,6 +4,8 @@ import { evaluatePreflight } from "@/lib/preflight";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Logo } from "@/components/logo";
 import { NearAnchorCard } from "@/components/near-anchor";
+import { NearWalletButton } from "@/components/near-wallet";
+import type { AnchorProof } from "@/lib/near";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle, ShieldCheck, Upload, FileText, Hash, Sparkles, CheckCircle2, XCircle,
@@ -103,6 +105,7 @@ function App() {
               <Link to="/" className="text-xs opacity-70 hover:opacity-100">← Back to overview</Link>
             </div>
           </div>
+          <NearWalletButton />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 pb-8 pt-2">
           <p className="text-xs font-semibold uppercase tracking-widest text-gold">Live demo · Case #VT-4821</p>
@@ -463,11 +466,12 @@ function Analyst({ docs, analysis, audit, submitted, decision, onApprove, sp, pr
 
 function ReceiptView({ docs, audit, decision, analysis, sp }: { docs: EvidenceDoc[]; audit: AuditEvent[]; decision: Decision; analysis: Analysis; sp: SP }) {
   const [sealHash, setSealHash] = useState("");
+  const [nearProof, setNearProof] = useState<AnchorProof | null>(null);
   const payload = useMemo(() => JSON.stringify({ case: "VT-4821", decision, seller_protection: { eligible: sp.eligible, rules: sp.rules.map((r) => ({ rule: r.label, pass: r.pass })) }, evidence: docs.map((d) => ({ name: d.name, kind: d.kind, sha256: d.hash })), audit, riskScore: analysis.riskScore }, null, 2), [docs, audit, decision, analysis, sp]);
   useEffect(() => { sha256Hex(new TextEncoder().encode(payload).buffer as ArrayBuffer).then(setSealHash); }, [payload]);
   if (!decision) return <div className="rounded-xl border bg-card p-10 text-center text-muted-foreground"><Receipt className="mx-auto mb-2 h-6 w-6" />The certified receipt is issued once the demo case is approved.</div>;
   const download = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify({ ...JSON.parse(payload), receipt_seal_sha256: sealHash }, null, 2)], { type: "application/json" }));
+    const url = URL.createObjectURL(new Blob([JSON.stringify({ ...JSON.parse(payload), receipt_seal_sha256: sealHash, near_evidence_proof: nearProof }, null, 2)], { type: "application/json" }));
     const a = document.createElement("a"); a.href = url; a.download = "resolution-receipt-VT-4821.json"; a.click(); URL.revokeObjectURL(url);
   };
   return (
@@ -489,7 +493,7 @@ function ReceiptView({ docs, audit, decision, analysis, sp }: { docs: EvidenceDo
           <ul className="space-y-1 text-xs">{audit.map((e, i) => <li key={i} className="flex gap-2"><span className="shrink-0 font-mono text-muted-foreground">{new Date(e.at).toLocaleTimeString()}</span><b className="shrink-0">{e.actor}</b><span>{e.action}</span></li>)}</ul>
         </div>
         <SellerProtectionCard sp={sp} compact />
-        <NearAnchorCard hashes={docs.map((d) => d.hash)} caseId="VT-4821" />
+        <NearAnchorCard hashes={docs.map((d) => d.hash)} caseId="VT-4821" onProof={setNearProof} />
         <div className="rounded-lg bg-success/10 p-3 text-sm"><CheckCircle2 className="mr-1 inline h-4 w-4 text-success" />Funds restored to available balance (simulated payment-platform release).</div>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
           <div className="min-w-0"><div className="text-xs text-muted-foreground">Receipt seal (SHA-256)</div><div className="break-all font-mono text-[11px]">{sealHash}</div></div>

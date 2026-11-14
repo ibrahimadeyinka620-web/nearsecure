@@ -1,5 +1,5 @@
-# Evidence pre-flight upgrade
-- [ ] Live checklist and guarded submission
-- [ ] Three-way entity comparison with mismatch highlighting
-- [ ] Safe simulated automatic approval and audit receipt
-- [ ] Rule tests and desktop/mobile workflow verification
+# NEAR hackathon additions
+- [ ] Real testnet wallet connection and confirmed evidence-root anchoring
+- [ ] Receipt proof link and exported blockchain reference
+- [ ] Privacy & Private AI / Real-World Money tracks page and landing navigation
+- [ ] Tests and desktop/mobile workflow verification

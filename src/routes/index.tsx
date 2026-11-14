@@ -46,7 +46,7 @@ function Landing() {
             <Logo className="h-10 w-10" />
             <span className="font-display text-lg font-bold">Veri<span className="text-gold">trail</span></span>
           </div>
-          <Button asChild variant="secondary"><Link to="/demo" search={{}}>Try live demo</Link></Button>
+          <div className="flex flex-wrap justify-end gap-2"><Button asChild variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><Link to="/near-tracks">NEAR tracks</Link></Button><Button asChild variant="secondary"><Link to="/demo" search={{}}>Try live demo</Link></Button></div>
         </nav>
         <div className="relative mx-auto grid max-w-6xl gap-10 px-6 pb-20 pt-10 md:grid-cols-[1.2fr_1fr] md:items-center">
           <div className="animate-rise">

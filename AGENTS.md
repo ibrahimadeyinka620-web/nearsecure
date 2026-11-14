@@ -31,3 +31,5 @@ use the editor.
 
 - Keep evidence extraction, reconciliation, and submission eligibility in the browser-safe preflight module; both submission and simulated approvals use this single gate so incomplete evidence cannot bypass the checklist.
 - Hold releases are local hackathon simulations, not real payment API decisions; preserve this distinction in approval records and user-visible results.
+- Initialize NEAR Wallet Selector through browser-only dynamic imports in the shared wallet provider; SSR must never evaluate wallet SDK initialization.
+- Anchor public case commitments through the shared testnet example contract with zero deposit; mark proof confirmed only after final RPC execution matches signer, contract, method, and exact case/root arguments, because wallet success alone is not proof.
