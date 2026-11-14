@@ -3,6 +3,7 @@ import { Link2, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 import { merkleRoot, anchorTransaction, verifyAnchor, type AnchorProof } from "@/lib/near";
 import { getNearSelector, useNearWallet, NearWalletButton } from "@/components/near-wallet";
 import { Button } from "@/components/ui/button";
+import type { InjectedWallet } from "@near-wallet-selector/core";
 
 export function NearAnchorCard({ hashes, caseId, onProof }: { hashes: string[]; caseId: string; onProof?: (proof: AnchorProof | null) => void }) {
   const [root, setRoot] = useState("");
@@ -37,8 +38,10 @@ export function NearAnchorCard({ hashes, caseId, onProof }: { hashes: string[]; 
       if (!reference) {
         if (!accountId) throw new Error("Connect a testnet wallet first.");
         const selector = await getNearSelector();
-        const wallet = await selector.wallet();
-        const result = await wallet.signAndSendTransaction({ signerId: accountId, ...anchorTransaction(caseId, root) });
+        const wallet = await selector.wallet<InjectedWallet>("my-near-wallet");
+        const tx = anchorTransaction(caseId, root);
+        const { actionCreators } = await import("@near-js/transactions");
+        const result = await wallet.signAndSendTransaction({ signerId: accountId, receiverId: tx.receiverId, actions: tx.actions.map(({ params }) => actionCreators.functionCall(params.methodName, params.args, BigInt(params.gas), BigInt(params.deposit))) });
         if (!result?.transaction.hash) throw new Error("No transaction was returned by the wallet. No proof has been confirmed.");
         reference = { transactionHash: result.transaction.hash, accountId };
         setPending(reference);

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { WalletSelector } from "@near-wallet-selector/core";
+import type { WalletSelector, InjectedWallet } from "@near-wallet-selector/core";
 import { Wallet, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ANCHOR_CONTRACT } from "@/lib/near";
@@ -36,7 +36,7 @@ export function NearWalletProvider({ children }: { children: ReactNode }) {
     setBusy(true); setError("");
     try {
       const selector = await getNearSelector();
-      const wallet = await selector.wallet("my-near-wallet");
+      const wallet = await selector.wallet<InjectedWallet>("my-near-wallet");
       const accounts = await wallet.signIn({ contractId: ANCHOR_CONTRACT, methodNames: ["addMessage"] });
       setAccountId(accounts[0]?.accountId ?? "");
     } catch (e) { setError(e instanceof Error ? e.message : "Wallet sign-in was cancelled. Try again."); }
